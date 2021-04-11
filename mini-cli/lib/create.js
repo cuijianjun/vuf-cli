@@ -1,3 +1,4 @@
+const fs = require('fs-extra')
 const path = require('path')
 const inquirer = require('inquirer')
 const PromptModuleAPI = require('./PromptModuleAPI')
@@ -5,6 +6,7 @@ const Creator = require('./Creator')
 const Generator = require('./Generator')
 const clearConsole = require('./utils/clearConsole')
 const executeCommand = require('./utils/executeCommand')
+const chalk = require('chalk')
 
 async function create(name) {
     const creator = new Creator()
@@ -12,9 +14,27 @@ async function create(name) {
     const promptModules = getPromptModules()
     const promptAPI = new PromptModuleAPI(creator)
     promptModules.forEach(m => m(promptAPI))
+    const targetDir = path.join(process.cwd(), name)
 
-    // 清空控制台
-    clearConsole()
+    // 如果目标目录已存在，询问是覆盖还是合并
+    if (fs.existsSync(targetDir)) {
+        // 清空控制台
+        clearConsole()
+        const {action} = await inquirer.prompt([{
+            name: 'action',
+            type: 'list',
+            message: `Target directory ${chalk.cyan(targetDir)} already exists. Pick an action:`,
+            choices: [
+                {name: 'Overwrite', value: 'overwrite'},
+                {name: 'Merge', value: 'merge'}
+            ]
+        }])
+
+        if (action === 'overwrite') {
+            console.log(`\nRemoving ${chalk.cyan(targetDir)}...`);
+            await fs.remove(targetDir)
+        }
+    }
 
     // 弹出交互提示语并获取用户的选择
     const answers = await inquirer.prompt(creator.getFinalPrompts())
@@ -26,7 +46,7 @@ async function create(name) {
         dependencies: {},
         devDependencies: {},
     }
-    
+
     const generator = new Generator(pkg, path.join(process.cwd(), name))
     // 填入 vue webpack 必选项，无需用户选择
     answers.features.unshift('vue', 'webpack')
