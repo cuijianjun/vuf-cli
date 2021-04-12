@@ -13,11 +13,6 @@
     "type": "git",
     "url": "git+https://github.com/woai3c/mini-cli.git"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "node scripts/verify-commit.js"
-    }
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
