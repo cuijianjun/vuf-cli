@@ -1,44 +1,73 @@
 const fs = require('fs-extra')
+const chalk = require('chalk')
 const path = require('path')
 const inquirer = require('inquirer')
 const PromptModuleAPI = require('./PromptModuleAPI')
 const Creator = require('./Creator')
 const Generator = require('./Generator')
 const clearConsole = require('./utils/clearConsole')
-const executeCommand = require('./utils/executeCommand')
-const chalk = require('chalk')
+const { savePreset, rcPath } = require('./utils/options')
+const { log } = require('./utils/logger')
+const { saveOptions } = require('./utils/options')
+const PackageManager = require('./PackageManager')
 
 async function create(name) {
+    const targetDir = path.join(process.cwd(), name)
+    // 如果目标目录已存在，询问是覆盖还是合并
+    if (fs.existsSync(targetDir)) {
+        // 清空控制台
+        clearConsole()
+        
+        const { action } = await inquirer.prompt([
+            {
+                name: 'action',
+                type: 'list',
+                message: `Target directory ${chalk.cyan(targetDir)} already exists. Pick an action:`,
+                choices: [
+                    { name: 'Overwrite', value: 'overwrite' },
+                    { name: 'Merge', value: 'merge' },
+                ],
+            },
+        ])
+
+        if (action === 'overwrite') {
+            console.log(`\nRemoving ${chalk.cyan(targetDir)}...`)
+            await fs.remove(targetDir)
+        }
+    }
+
     const creator = new Creator()
     // 获取各个模块的交互提示语
     const promptModules = getPromptModules()
     const promptAPI = new PromptModuleAPI(creator)
     promptModules.forEach(m => m(promptAPI))
-    const targetDir = path.join(process.cwd(), name)
 
-    // 如果目标目录已存在，询问是覆盖还是合并
-    if (fs.existsSync(targetDir)) {
-        // 清空控制台
-        clearConsole()
-        const {action} = await inquirer.prompt([{
-            name: 'action',
-            type: 'list',
-            message: `Target directory ${chalk.cyan(targetDir)} already exists. Pick an action:`,
-            choices: [
-                {name: 'Overwrite', value: 'overwrite'},
-                {name: 'Merge', value: 'merge'}
-            ]
-        }])
-
-        if (action === 'overwrite') {
-            console.log(`\nRemoving ${chalk.cyan(targetDir)}...`);
-            await fs.remove(targetDir)
-        }
-    }
+    // 清空控制台
+    clearConsole()
 
     // 弹出交互提示语并获取用户的选择
     const answers = await inquirer.prompt(creator.getFinalPrompts())
-    console.log("answers", answers);
+
+    if (answers.preset !== '__manual__') {
+        const preset = creator.getPresets()[answers.preset]
+        Object.keys(preset).forEach(key => {
+            answers[key] = preset[key]
+        })
+    }
+
+    if (answers.packageManager) {
+        saveOptions({
+            packageManager: answers.packageManager,
+        })
+    }
+
+    if (answers.save && answers.saveName && savePreset(answers.saveName, answers)) {
+        log()
+        log(`Preset ${chalk.yellow(answers.saveName)} saved in ${chalk.yellow(rcPath)}`)
+    }
+
+    const pm = new PackageManager(targetDir, answers.packageManager)
+
     // package.json 文件内容
     const pkg = {
         name,
@@ -46,8 +75,8 @@ async function create(name) {
         dependencies: {},
         devDependencies: {},
     }
-
-    const generator = new Generator(pkg, path.join(process.cwd(), name))
+    
+    const generator = new Generator(pkg, targetDir)
     // 填入 vue webpack 必选项，无需用户选择
     answers.features.unshift('vue', 'webpack')
 
@@ -59,14 +88,11 @@ async function create(name) {
 
     await generator.generate()
 
-    console.log('\n正在下载依赖...\n')
     // 下载依赖
-    console.log("path", path.join(process.cwd(), name));
-    await executeCommand('npm install', path.join(process.cwd(), name))
-    
-    console.log('\n依赖下载完成! 执行下列命令开始开发：\n')
-    console.log(`cd ${name}`)
-    console.log(`npm run dev`)
+    await pm.install()
+    log('\n依赖下载完成! 执行下列命令开始开发：\n')
+    log(`cd ${name}`)
+    log(`${pm.bin === 'npm'? 'npm run' : 'yarn'} dev`)
 }
 
 function getPromptModules() {

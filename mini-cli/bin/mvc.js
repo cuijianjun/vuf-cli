@@ -10,4 +10,4 @@ program
     create(name)
 })
 
-program.parse(process.argv)
+program.parse()
