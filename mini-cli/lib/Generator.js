@@ -147,7 +147,9 @@ class Generator {
         // all paths are converted to use / instead of \
         // 将反斜杠 \ 转换为正斜杠 /
         normalizeFilePaths(files)
-
+        console.log("require('./utils/codemods/injectImports')", require('./utils/codemods/injectImports'));
+        console.log("require('./utils/codemods/injectImports')", require('./utils/codemods/injectImports').default);
+        console.log("require('./utils/codemods/injectImports')", require('./utils/codemods/injectImports').parser);
         // 处理 import 语句的导入和 new Vue() 选项的注入
         // vue-codemod 库，对代码进行解析得到 AST，再将 import 语句和根选项注入
         Object.keys(files).forEach(file => {
