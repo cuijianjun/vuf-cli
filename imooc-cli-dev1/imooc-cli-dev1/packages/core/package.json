@@ -9,6 +9,9 @@
   "bin": {
     "imooc-cli-dev": "bin/index.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@imooc-cli-dev1/utils": "^1.0.1"
   },
@@ -28,5 +31,6 @@
   },
   "bugs": {
     "url": "https://github.com/cuijianjun/vuf-cli/issues"
-  }
+  },
+  "gitHead": "45906bd0bcb15255844caee5b60bbdf328c90e69"
 }
