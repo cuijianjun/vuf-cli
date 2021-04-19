@@ -1,7 +1,7 @@
 {
   "name": "mooc-test-main",
   "version": "1.0.0",
-  "description": "",
+  "description": "mooc-test-main",
   "main": "index.js",
   "bin": {
     "imooc-test": "bin/index.js"
@@ -11,5 +11,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dedent": "^0.7.0",
+    "yargs": "^16.2.0"
+  },
+  "repository": {
+    "type": "git"
+  }
 }
