@@ -68,8 +68,8 @@ cli
       chain.then(() => console.log("chain4"))
       setTimeout(() => {
         let chain = Promise.resolve();
-        chain.then(() => console.log("chain5"))
-      }, 0)
+        chain.then(() => console.log("chain5");)
+      })
       console.log("end");
     }
   })

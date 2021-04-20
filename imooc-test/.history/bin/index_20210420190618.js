@@ -55,22 +55,7 @@ cli
 
     },
     handle: (argv) => {
-      setTimeout(() => {
-        console.log("setTimeout");
-      }, 0)
-      new Promise((resolve, reject) => {
-        let chain = Promise.resolve();
-        chain.then(() => console.log("chain1"))
-        chain.then(() => console.log("chain2"))
-        chain.then(() => console.log("chain3"))
-      })
-      let chain = Promise.resolve();
-      chain.then(() => console.log("chain4"))
-      setTimeout(() => {
-        let chain = Promise.resolve();
-        chain.then(() => console.log("chain5"))
-      }, 0)
-      console.log("end");
+      set
     }
   })
   .parse(argv, context)
