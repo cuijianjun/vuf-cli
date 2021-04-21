@@ -10,7 +10,7 @@ const pkg = require('../package.json')
 const log = require("@imooc-cli-dev1/log")
 const constant = require('./const')
 
-
+let args;
 
 function core() {
     try {
@@ -18,10 +18,28 @@ function core() {
         checkNodeVersion();
         checkRoot();
         checkUserHome();
+        checkInputArgs()
     } catch (e) {   
         log.error(e.message)
     }
 }
+
+
+function checkInputArgs() {
+    const minimist = require('minimist')
+    args = minimist(process.argv.slice(2))
+    checkArgs(args)
+}
+
+function checkArgs() {
+    if(args.debug){
+        process.env.LOG_LEVEL = 'verbase'
+    } else {
+        process.env.LOG_LEVEL = 'info'
+    }
+    log.level = process.env.LOG_LEVEL
+}
+
 function checkUserHome() {
     if (!userHome || !pathExists(userHome)) {
         throw new Error(colors.red('当前登录用户主目录不存在'))
