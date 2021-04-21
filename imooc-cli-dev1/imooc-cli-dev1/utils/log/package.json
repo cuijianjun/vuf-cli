@@ -1,20 +1,14 @@
 {
-  "name": "@imooc-cli-dev1/core",
+  "name": "@imooc-cli-dev/log",
   "version": "1.0.3",
-  "description": "imooc-cli-dev1 core",
+  "description": "imooc-cli-dev log",
+  "keywords": [
+    "log"
+  ],
   "author": "Frank <376247934@qq.com>",
   "homepage": "https://github.com/cuijianjun/vuf-cli#readme",
   "license": "ISC",
-  "main": "lib/core.js",
-  "bin": {
-    "imooc-cli-dev": "bin/index.js"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@imooc-cli-dev1/utils": "^1.0.3"
-  },
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -22,6 +16,9 @@
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cuijianjun/vuf-cli.git"
@@ -32,5 +29,7 @@
   "bugs": {
     "url": "https://github.com/cuijianjun/vuf-cli/issues"
   },
-  "gitHead": "45906bd0bcb15255844caee5b60bbdf328c90e69"
+  "dependencies": {
+    "npmlog": "^4.1.2"
+  }
 }

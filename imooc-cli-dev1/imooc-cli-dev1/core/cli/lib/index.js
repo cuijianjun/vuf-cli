@@ -2,6 +2,7 @@
 
 module.exports = core;
 
+const path = require('path')
 const userHome = require('user-home')
 const pathExists = require('path-exists').sync;
 const semver = require('semver')
@@ -10,7 +11,7 @@ const pkg = require('../package.json')
 const log = require("@imooc-cli-dev1/log")
 const constant = require('./const')
 
-let args;
+let args, config;
 
 function core() {
     try {
@@ -19,7 +20,8 @@ function core() {
         checkRoot();
         checkUserHome();
         checkInputArgs()
-    } catch (e) {   
+        checkEnv()
+    } catch (e) {
         log.error(e.message)
     }
 }
@@ -31,8 +33,38 @@ function checkInputArgs() {
     checkArgs(args)
 }
 
+
+
+function checkEnv() {
+    const dotenv = require('dotenv')
+    const dotenvPath = path.resolve(userHome, '.env');
+    if (pathExists(dotenvPath)) {
+        config = dotenv.config({
+            path: dotenvPath
+        })
+    }
+    // config = dotenv.config({
+    //     path: path.resolve(userHome,'.env')
+    // });
+    createDefaultConfig()
+    log.verbose('环境变量', process.env.CLI_HOME_PATH)
+}
+
+function createDefaultConfig() {
+    const cliConfig = {
+        home: userHome
+    }
+    if (process.env.CLI_HOME) {
+        cliConfig['cliHome'] = path.join(userHome, process.env.CLI_HOME)
+    } else {
+        cliConfig['cliHome'] = path.join(userHome, constant.DEFAULT_CLI_HOME)
+    }
+    process.env.CLI_HOME_PATH = cliConfig['cliHome']
+    // return cliConfig
+}
+
 function checkArgs() {
-    if(args.debug){
+    if (args.debug) {
         process.env.LOG_LEVEL = 'verbase'
     } else {
         process.env.LOG_LEVEL = 'info'
@@ -62,7 +94,7 @@ function checkNodeVersion() {
     if (!semver.gt(currentVersion, lowestVersion)) {
         throw Error(colors.red(`imooc-cli 需要安装 V${lowestVersion}以上的版本的nodejs`))
     }
-    
+
 
 }
 
