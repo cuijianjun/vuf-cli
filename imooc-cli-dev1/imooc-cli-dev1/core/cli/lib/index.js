@@ -2,6 +2,8 @@
 
 module.exports = core;
 
+const userHome = require('user-home')
+const pathExists = require('path-exists').sync;
 const semver = require('semver')
 const colors = require('colors/safe')
 const pkg = require('../package.json')
@@ -14,10 +16,24 @@ function core() {
     try {
         checkPkgVersion();
         checkNodeVersion();
+        checkRoot();
+        checkUserHome();
     } catch (e) {   
         log.error(e.message)
     }
 }
+function checkUserHome() {
+    if (!userHome || !pathExists(userHome)) {
+        throw new Error(colors.red('当前登录用户主目录不存在'))
+    }
+}
+function checkRoot() {
+    // console.log(process.geteuid());
+    // 因为只在这里使用
+    const rootCheck = require('root-check');
+    rootCheck()
+}
+
 
 function checkNodeVersion() {
     // 第一步 获取当前的node版本号
