@@ -1,0 +1,41 @@
+{
+  "name": "@imooc-cli-dev1/core",
+  "version": "1.0.3",
+  "description": "imooc-cli-dev1 core",
+  "author": "Frank <376247934@qq.com>",
+  "homepage": "https://github.com/cuijianjun/vuf-cli#readme",
+  "license": "ISC",
+  "main": "lib/core.js",
+  "bin": {
+    "imooc-cli-dev": "bin/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@imooc-cli-dev1/log": "file:../../utils/log",
+    "@imooc-cli-dev1/utils": "file:../../utils/utils",
+    "colors": "^1.4.0",
+    "import-local": "^3.0.2",
+    "npmlog": "^4.1.2",
+    "semver": "^7.3.5"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuijianjun/vuf-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/cuijianjun/vuf-cli/issues"
+  },
+  "gitHead": "45906bd0bcb15255844caee5b60bbdf328c90e69"
+}
