@@ -15,6 +15,7 @@
   "dependencies": {
     "@imooc-cli-dev1/log": "file:../../utils/log",
     "@imooc-cli-dev1/utils": "file:../../utils/utils",
+    "@imooc-cli-dev1/get-npm-info": "file:../../utils/get-npm-info",
     "colors": "^1.4.0",
     "dotenv": "^8.2.0",
     "import-local": "^3.0.2",
