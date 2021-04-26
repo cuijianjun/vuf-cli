@@ -8,10 +8,13 @@ const pathExists = require('path-exists').sync;
 const semver = require('semver')
 const colors = require('colors/safe')
 const pkg = require('../package.json')
+const commander = require('commander')
 const log = require("@imooc-cli-dev1/log")
 const constant = require('./const')
 
 let args, config;
+
+const program = new commander.Command();
 
 async function core() {
     try {
@@ -19,12 +22,35 @@ async function core() {
         checkNodeVersion();
         checkRoot();
         checkUserHome();
-        checkInputArgs()
+        // checkInputArgs()
         checkEnv()
         await checkGlobalUpdate()
+        registerCommand()
     } catch (e) {
         log.error(e.message)
     }
+}
+function registerCommand() {
+    program
+        .name(Object.keys(pkg.bin)[0])
+        .usage('<command> [options]')
+        .version(pkg.version)
+        .option('-d, --debug', '是否开始调试模式', false);
+    
+
+    program.on('option:debug', function() {
+        console.log(program.debug);
+        // console.log(process.env.LOG_LEVEL);
+        if(program.debug) {
+            process.env.LOG_LEVEL = 'verbose';
+        } else {
+            process.env.LOG_LEVEL = 'info';
+        }
+        log.level = process.env.LOG_LEVEL
+        log.verbose('test')
+    });
+
+    program.parse(process.argv);
 }
 
 async function checkGlobalUpdate() {
@@ -104,7 +130,7 @@ function checkRoot() {
 
 function checkNodeVersion() {
     // 第一步 获取当前的node版本号
-    console.log(process.version);
+    // console.log(process.version);
     const currentVersion = process.version
     const lowestVersion = constant.LOWEST_NODE_VERSION
     // 第二步：比对最新执行要求版本号
