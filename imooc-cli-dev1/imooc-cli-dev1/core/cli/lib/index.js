@@ -30,6 +30,7 @@ async function core() {
         log.error(e.message)
     }
 }
+
 function registerCommand() {
     program
         .name(Object.keys(pkg.bin)[0])
@@ -37,11 +38,11 @@ function registerCommand() {
         .version(pkg.version)
         .option('-d, --debug', '是否开始调试模式', false);
     
-
     program.on('option:debug', function() {
-        console.log(program.debug);
         // console.log(process.env.LOG_LEVEL);
-        if(program.debug) {
+        const options = program.opts();
+        console.log(options.debug);
+        if(options.debug) {
             process.env.LOG_LEVEL = 'verbose';
         } else {
             process.env.LOG_LEVEL = 'info';
@@ -49,9 +50,9 @@ function registerCommand() {
         log.level = process.env.LOG_LEVEL
         log.verbose('test')
     });
-
     program.parse(process.argv);
 }
+
 
 async function checkGlobalUpdate() {
     // 1. 获取当前版本号和模块名
