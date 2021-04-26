@@ -10,6 +10,7 @@ const colors = require('colors/safe')
 const pkg = require('../package.json')
 const commander = require('commander')
 const log = require("@imooc-cli-dev1/log")
+const init = require("@imooc-cli-dev1/init")
 const constant = require('./const')
 
 let args, config;
@@ -37,20 +38,38 @@ function registerCommand() {
         .usage('<command> [options]')
         .version(pkg.version)
         .option('-d, --debug', '是否开始调试模式', false);
-    
+
+
+    program.command('init [projectName]')
+    .option('-f, --force', '是否强制初始化项目')
+    .action(init)
+    // 开启debug模式
     program.on('option:debug', function() {
         // console.log(process.env.LOG_LEVEL);
         const options = program.opts();
-        console.log(options.debug);
+        // console.log(options.debug);
         if(options.debug) {
             process.env.LOG_LEVEL = 'verbose';
         } else {
             process.env.LOG_LEVEL = 'info';
         }
         log.level = process.env.LOG_LEVEL
-        log.verbose('test')
+        // log.verbose('test')
     });
-    program.parse(process.argv);
+    // 对未知的命令监听
+    program.on("command:*", function(obj) {
+        const availableCommands = program.commands.map(cmd => cmd.name());
+        console.log(colors.red('未知的命令：' + obj[0]));
+        if (availableCommands.length > 0) {
+            console.log(colors.red('可用命令：' + availableCommands.join(',')));
+        }
+    })
+    if (process.argv && process.argv.length < 1) {
+        program.outputHelp();
+        console.log();
+    } else {
+        program.parse(process.argv)
+    }
 }
 
 
