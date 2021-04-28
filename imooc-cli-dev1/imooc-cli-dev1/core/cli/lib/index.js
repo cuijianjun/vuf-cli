@@ -11,27 +11,27 @@ const pkg = require('../package.json')
 const commander = require('commander')
 const log = require("@imooc-cli-dev1/log")
 const init = require("@imooc-cli-dev1/init")
+const exec = require("@imooc-cli-dev1/exec")
 const constant = require('./const')
-
-let args, config;
 
 const program = new commander.Command();
 
 async function core() {
     try {
-        checkPkgVersion();
-        checkNodeVersion();
-        checkRoot();
-        checkUserHome();
-        // checkInputArgs()
-        checkEnv()
-        await checkGlobalUpdate()
+        await prepare();
         registerCommand()
     } catch (e) {
         log.error(e.message)
     }
 }
-
+async function prepare() {
+    checkPkgVersion();
+    checkNodeVersion();
+    checkRoot();
+    checkUserHome();
+    checkEnv()
+    await checkGlobalUpdate()
+}
 function registerCommand() {
     program
         .name(Object.keys(pkg.bin)[0])
@@ -41,15 +41,15 @@ function registerCommand() {
         .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
     program.command('init [projectName]')
-    .option('-f, --force', '是否强制初始化项目')
-    .action(init)
+        .option('-f, --force', '是否强制初始化项目')
+        .action(exec)
 
     // 开启debug模式
-    program.on('option:debug', function() {
+    program.on('option:debug', function () {
         // console.log(process.env.LOG_LEVEL);
-        // const options = program.opts();
+        const options = program.opts();
         // console.log(options.debug);
-        if(options.debug) {
+        if (options.debug) {
             process.env.LOG_LEVEL = 'verbose';
         } else {
             process.env.LOG_LEVEL = 'info';
@@ -57,8 +57,13 @@ function registerCommand() {
         log.level = process.env.LOG_LEVEL
         // log.verbose('test')
     });
+
+    // 指定的targetPath
+    program.on('option:targetPath', function () {
+        process.env.CLI_TARGET_PATH = program.targetPath
+    })
     // 对未知的命令监听
-    program.on("command:*", function(obj) {
+    program.on("command:*", function (obj) {
         const availableCommands = program.commands.map(cmd => cmd.name());
         console.log(colors.red('未知的命令：' + obj[0]));
         if (availableCommands.length > 0) {
@@ -79,10 +84,10 @@ async function checkGlobalUpdate() {
     const currentVersion = pkg.version;
     const npmName = pkg.name;
     // 2. 调用npm API，获取所有版本号
-    const {getNpmSemverVersion} = require('@imooc-cli-dev1/get-npm-info')
+    const { getNpmSemverVersion } = require('@imooc-cli-dev1/get-npm-info')
     const lastVersion = await getNpmSemverVersion(currentVersion, npmName)
     if (lastVersion && semver.gt(lastVersion, currentVersion)) {
-        log.warn('更新提示',colors.yellow(`请手动更新 ${npmName}
+        log.warn('更新提示', colors.yellow(`请手动更新 ${npmName}
 当前版本： ${currentVersion},
 最新版本： ${lastVersion}
 更新命令: npm install -g ${npmName}
@@ -90,20 +95,14 @@ async function checkGlobalUpdate() {
     }
     // 3. 提取所有版本号，比对那些版本号是大于当前版本号
     // 4. 获取最新的版本号，提示用户更新到该版本
-    
-}
 
-function checkInputArgs() {
-    const minimist = require('minimist')
-    args = minimist(process.argv.slice(2))
-    checkArgs(args)
 }
 
 function checkEnv() {
     const dotenv = require('dotenv')
     const dotenvPath = path.resolve(userHome, '.env');
     if (pathExists(dotenvPath)) {
-        config = dotenv.config({
+        dotenv.config({
             path: dotenvPath
         })
     }
@@ -111,7 +110,6 @@ function checkEnv() {
     //     path: path.resolve(userHome,'.env')
     // });
     createDefaultConfig()
-    log.verbose('环境变量', process.env.CLI_HOME_PATH)
 }
 
 function createDefaultConfig() {
@@ -125,15 +123,6 @@ function createDefaultConfig() {
     }
     process.env.CLI_HOME_PATH = cliConfig['cliHome']
     // return cliConfig
-}
-
-function checkArgs() {
-    if (args.debug) {
-        process.env.LOG_LEVEL = 'verbase'
-    } else {
-        process.env.LOG_LEVEL = 'info'
-    }
-    log.level = process.env.LOG_LEVEL
 }
 
 function checkUserHome() {
