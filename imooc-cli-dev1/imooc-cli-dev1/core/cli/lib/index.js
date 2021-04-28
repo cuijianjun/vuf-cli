@@ -37,16 +37,17 @@ function registerCommand() {
         .name(Object.keys(pkg.bin)[0])
         .usage('<command> [options]')
         .version(pkg.version)
-        .option('-d, --debug', '是否开始调试模式', false);
-
+        .option('-d, --debug', '是否开始调试模式', false)
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
     program.command('init [projectName]')
     .option('-f, --force', '是否强制初始化项目')
     .action(init)
+
     // 开启debug模式
     program.on('option:debug', function() {
         // console.log(process.env.LOG_LEVEL);
-        const options = program.opts();
+        // const options = program.opts();
         // console.log(options.debug);
         if(options.debug) {
             process.env.LOG_LEVEL = 'verbose';
