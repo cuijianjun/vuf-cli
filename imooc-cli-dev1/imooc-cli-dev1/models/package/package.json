@@ -1,6 +1,6 @@
 {
   "name": "@imooc-cli-dev/package",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "imooc-cli-dev npm modules",
   "author": "Frank <376247934@qq.com>",
   "homepage": "https://github.com/cuijianjun/vuf-cli#readme",
@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "@imooc-cli-dev1/format-path": "file:../../utils/format-path",
-    "@imooc-cli-dev1/utils": "file:../../utils/utils",
     "@imooc-cli-dev1/get-npm-info": "file:../../utils/get-npm-info",
+    "@imooc-cli-dev1/utils": "file:../../utils/utils",
     "npminstall": "^4.11.0",
     "pkg-dir": "^5.0.0"
   }
