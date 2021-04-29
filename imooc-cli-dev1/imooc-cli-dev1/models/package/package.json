@@ -27,8 +27,10 @@
     "url": "https://github.com/cuijianjun/vuf-cli/issues"
   },
   "dependencies": {
-    "@imooc-cli-dev1/utils": "file:../../utils/utils",
     "@imooc-cli-dev1/format-path": "file:../../utils/format-path",
+    "@imooc-cli-dev1/utils": "file:../../utils/utils",
+    "@imooc-cli-dev1/get-npm-info": "file:../../utils/get-npm-info",
+    "npminstall": "^4.11.0",
     "pkg-dir": "^5.0.0"
   }
 }

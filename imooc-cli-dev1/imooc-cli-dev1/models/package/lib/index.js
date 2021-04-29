@@ -1,8 +1,11 @@
 'use strict';
 const path = require('path')
 const pkgDir = require('pkg-dir').sync;
+const pathExists = require('path-exists').sync;
+const npminstall = require('npminstall');
 const { isObject } = require('@imooc-cli-dev1/utils');
 const formatPath = require('@imooc-cli-dev1/format-path');
+const { getDefaultRegistry, getNpmLatestVersion } = require('@imooc-cli-dev1/get-npm-info');
 
 class Package {
     constructor(options) {
@@ -16,16 +19,42 @@ class Package {
         this.targetPath = options.targetPath;
         // // package的存储路径
         // this.storePath = options.storePath;
+        // 缓存package的路径
+        this.storeDir = options.storeDir
         // package的name
         this.packageName = options.packageName;
         // package的version
         this.packageVersion = options.packageVersion;
     }
 
+    async prepare() {
+        if (this.packageVersion === 'latest') {
+            this.packageVersion = await getNpmLatestVersion(this.packageName);
+          }
+    }
+
     // 判断当前的package是否存在
-    exists() { }
+    async exists() {
+        if (this.storeDir) {
+            await this.prepare();
+        } else {
+            return pathExists(this.targetPath);
+        }
+    }
     // 安装package
-    install() { }
+    install() {
+        npminstall({
+            root: this.targetPath,
+            storeDir: this.storeDir,
+            registry: getDefaultRegistry(),
+            pkgs: [
+                {
+                    name: this.packageName,
+                    version: this.packageVersion
+                }
+            ]
+        })
+    }
     // 更新package
     update() { }
     // 获取入口文件的路径
