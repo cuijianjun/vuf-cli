@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "dev": "webpack -w"
+    "dev": "webpack -w",
+    "deploy": "./deploy.sh"
   },
   "keywords": [],
   "author": "",

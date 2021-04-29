@@ -11,4 +11,6 @@
 //Es module
 // 加载： import
 // 输出： export default/export function/const
-require('../dist/core')
+// require('../dist/core')
+
+require('./process')
