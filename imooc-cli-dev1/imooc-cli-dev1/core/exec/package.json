@@ -29,6 +29,7 @@
   "dependencies": {
     "@imooc-cli-dev1/log": "file:../../utils/log",
     "@imooc-cli-dev1/package": "file:../../models/package",
-    "@imooc-cli-dev1/utils": "file:../../utils/utils"
-  }
+    "@imooc-cli-dev1/utils": "^1.0.4"
+  },
+  "gitHead": "11ecec9352d9f4a85860c0aac6ad7caca3c1d3f1"
 }
